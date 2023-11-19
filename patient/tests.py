@@ -1,45 +1,77 @@
+import json
 from django.test import TestCase
 
 # Create your tests here.
-from django.test import TestCase, Client
+from rest_framework.test import APITestCase
 from django.urls import reverse
 from .models import Patient
+from patient import views
+from rest_framework.test import APIRequestFactory
 
 
-class PatientTestCase(TestCase):
+class PatientTestCase(APITestCase):
+    factory = APIRequestFactory()
     def setUp(self):
         Patient.objects.create(
             name="Test Patient", email="test@example.com", password="test123"
         )
 
+    # testing adding a patient
     def test_post_patient(self):
-        client = Client()
-        url = "patient/post"
-        response = client.post(
-            url,
-            {
-                "name": "Test2 Patient",
-                "email": "Test2@example.com",
-                'password': 'test123'
+        view = views.PatientViewSet.as_view({'post': 'create'})
+        path = '/api/v1/patients/'
+        data = {
+                "name": "Test Patient 2",
+                "email": "test2@example.com",
+                "password": "test123"
             }
-        )
-        self.assertEqual(response.status_code, 201)
+        request = self.factory.post(path, data, format='json')
+        response = view(request)
+        self.assertEqual(response.status_code, 201) # successfully created
+        self.assertEqual(Patient.objects.count(), 2) # should have 2 patients in total
+        # print all patients
 
+        response_data = json.loads(response.content)
+        print(response_data)
+        self.assertEqual(response_data['patient']['email'], 'test2@example.com') # check if the email is correct
 
+    # testing getting all patients
     def test_get_all_patient(self):
-        client = Client()
-        response = client.get("/patient/")
-        print(response.content)
+        view = views.PatientViewSet.as_view({'get': 'list'})
+        request = self.factory.get('/api/v1/patients/')
+        response = view(request)
         self.assertEqual(response.status_code, 200)
 
-    def test_get_patient_by_id(self):
-        client = Client()
-        response = client.get("/patient/1")
-        self.assertEqual(response.status_code, 404)
+    # testing getting a patient by id
+    def test_get_patient(self):
+        new_patient = Patient.objects.create(
+            name="new Patient",
+            email="new@example.com",
+            password="test123"
+        )
 
+        view = views.PatientViewSet.as_view({'get': 'retrieve'})
+        request = self.factory.get('/api/v1/patients/{new_patient.id}/}')
+        response = view(request, pk=new_patient.id)
+        self.assertEqual(response.status_code, 200)
 
+    # def patch_patient(self):
+    #     url = reverse("api/v1/patient-detail", args=[1])
+    #     response = self.client.patch(
+    #         url,
+    #         {
+    #             "name": "Test Patient New name"
+    #         },
+    #         content_type="application/json"
+    #     )
+    #     self.assertEqual(response.status_code, 200)
 
+    # def check_updated_name(self):
+    #     url = reverse("api/v1/patient-detail", args=[1])
+    #     response = self.client.get(url)
+    #     self.assertEqual(response.data["name"], "Test Patient New name")
 
-
-
-
+    # def delete_patient(self):
+    #     url = reverse("api/v1/patient-detail", args=[1])
+    #     response = self.client.delete(url)
+    #     self.assertEqual(response.status_code, 204)
