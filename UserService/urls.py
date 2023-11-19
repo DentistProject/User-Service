@@ -20,11 +20,11 @@ from patient import views
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r"patient", views.PatientViewSet)
+router.register(r"api/v1/patient", views.PatientViewSet)
 
 urlpatterns = [
     # /
-    path("", include(router.urls)),
+    path("", include((router.urls, 'patient'), namespace="patient")),
     path("admin/", admin.site.urls),
 ]
 

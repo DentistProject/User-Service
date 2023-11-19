@@ -1,3 +1,4 @@
+import json
 import uuid
 from django.db import models
 
@@ -12,7 +13,8 @@ class Patient(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     def __str__(self) -> str:
-        return self.name
+        # return all fields
+        return str(self.__dict__)
 
 
 # class Dentist(models.Model):
