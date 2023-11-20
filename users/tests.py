@@ -11,8 +11,9 @@ from rest_framework.test import APIRequestFactory
 
 class PatientTestCase(APITestCase):
     factory = APIRequestFactory()
+    test_patient = None
     def setUp(self):
-        Patient.objects.create(
+        self.test_patient = Patient.objects.create(
             name="Test Patient", email="test@example.com", password="test123"
         )
 
@@ -33,7 +34,7 @@ class PatientTestCase(APITestCase):
 
         response_data = json.loads(response.content)
         print(response_data)
-        self.assertEqual(response_data['patient']['email'], 'test2@example.com') # check if the email is correct
+        self.assertEqual(response_data['data']['email'], 'test2@example.com') # check if the email is correct
 
     # testing getting all patients
     def test_get_all_patient(self):
@@ -53,25 +54,28 @@ class PatientTestCase(APITestCase):
         view = views.PatientViewSet.as_view({'get': 'retrieve'})
         request = self.factory.get('/api/v1/patients/{new_patient.id}/}')
         response = view(request, pk=new_patient.id)
+        response_data = json.loads(response.content)
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_data['name'], "new Patient")
 
-    # def patch_patient(self):
-    #     url = reverse("api/v1/patient-detail", args=[1])
-    #     response = self.client.patch(
-    #         url,
-    #         {
-    #             "name": "Test Patient New name"
-    #         },
-    #         content_type="application/json"
-    #     )
-    #     self.assertEqual(response.status_code, 200)
+    # testing updating a patient
+    def test_patch_patient(self):
+        path = '/api/v1/patients/'
+        content = {
+            "name": "Test Patient New name"
+            }
+        view = views.PatientViewSet.as_view({'patch': 'partial_update'})
+        request = self.factory.patch(path, content, format='json')
+        response = view(request, pk=self.test_patient.id)
+        response_data = json.loads(response.content)
+        print(response_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response_data['data']['name'], "Test Patient New name")
 
-    # def check_updated_name(self):
-    #     url = reverse("api/v1/patient-detail", args=[1])
-    #     response = self.client.get(url)
-    #     self.assertEqual(response.data["name"], "Test Patient New name")
-
-    # def delete_patient(self):
-    #     url = reverse("api/v1/patient-detail", args=[1])
-    #     response = self.client.delete(url)
-    #     self.assertEqual(response.status_code, 204)
+    def test_delete_patient(self):
+        path = '/api/v1/patients/'
+        request = self.factory.delete(path)
+        view = views.PatientViewSet.as_view({'delete': 'destroy'})
+        response = view(request, pk=self.test_patient.id)
+        self.assertEqual(response.status_code, 204) # successfully deleted should have status code 204
+        self.assertFalse(Patient.objects.filter(id=self.test_patient.id).exists()) # should not exist anymore

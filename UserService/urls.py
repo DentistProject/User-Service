@@ -20,7 +20,8 @@ from users import views
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-router.register(r"api/v1/patient", views.PatientViewSet)
+router.register(r"api/v1/patients", views.PatientViewSet)
+#router.register(r"api/v1/dentists", views.DentistViewSet)
 
 urlpatterns = [
     # /

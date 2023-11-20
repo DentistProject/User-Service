@@ -30,7 +30,6 @@ mqtt_handler = MQTTHandler(broker_address, port, topic, username, password)
 mqtt_handler.connect()
 
 class PatientViewSet(ModelViewSet):
-    app_name = "patient"
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
     allowed_methods = ['get', 'post', 'patch', 'delete']
@@ -117,12 +116,11 @@ class PatientViewSet(ModelViewSet):
         try:
             patient = Patient.objects.get(pk=pk)
             patient.delete()
-            return JsonResponse({"message": "Patient was deleted successfully!"}, status=200)
+            return JsonResponse({"message": "Patient was deleted successfully!"}, status=204)
         except Patient.DoesNotExist:
             return JsonResponse({"message": "Patient not found!"}, status=404)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
-
 
 
 def mqtt_logger(request, method):
