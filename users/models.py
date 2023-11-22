@@ -18,9 +18,9 @@ class Dentist(models.Model):
         return str(self.__dict__)
 
 class Patient(models.Model):
-    name = models.CharField(max_length=100, blank=False, default="name")
-    email = models.EmailField(max_length=100, blank=False, unique=True, default="email")
-    password = models.CharField(max_length=100, blank=False, default="password")
+    name = models.CharField(max_length=100, blank=False)
+    email = models.EmailField(max_length=100, blank=False, unique=True)
+    password = models.CharField(max_length=100, blank=False)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     def __str__(self) -> str:
