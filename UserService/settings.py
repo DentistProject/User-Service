@@ -16,6 +16,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+DB_HOST = os.environ.get('DB_HOST')
+if os.path.exists('/dockerenv'):
+    DB_HOST = 'host.docker.internal'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
