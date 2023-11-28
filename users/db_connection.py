@@ -12,7 +12,8 @@ help = "Starts the Django development server and prints a message when the datab
 def check_db_connect():
     print("Checking database connection...")
     # Check if the database is successfully connected
-    if connection.ensure_connection():
+    try:
+        connection.ensure_connection()
         print("Database is successfully connected!")
-    else:
+    except OperationalError:
         print("Database is not connected")

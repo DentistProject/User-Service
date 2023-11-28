@@ -26,6 +26,6 @@ router.register(r"api/v1/dentists", views.DentistViewSet)
 urlpatterns = [
     path("", include(router.urls)),
     path("admin/", admin.site.urls),
-    path("login/", include("users.urls")),
+    path("", include("users.urls")),
 ]
 
