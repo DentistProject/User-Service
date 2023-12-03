@@ -29,7 +29,8 @@ class Patient(models.Model):
         return str(self.__dict__)
 
 # class Admin(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     username = models.CharField(max_length=100, primary_key=True, blank=False)
+#     password = models.CharField(max_length=100, blank=False)
 
 class PatientToken(models.Model):
     user = models.ForeignKey(Patient, on_delete=models.CASCADE)
