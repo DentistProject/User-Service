@@ -16,6 +16,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+DB_HOST = os.environ.get('DB_HOST')
+if os.path.exists('/dockerenv'):
+    DB_HOST = 'host.docker.internal'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
@@ -27,7 +31,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['host.docker.internal', 'localhost', '127.0.0.1']
 
 APPEND_SLASH = True
 
@@ -55,6 +59,12 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 
 ROOT_URLCONF = "UserService.urls"
 
@@ -86,6 +96,8 @@ WSGI_APPLICATION = "UserService.wsgi.application"
 #         "NAME": BASE_DIR / "db.sqlite3",
 #     }
 # }
+
+in_docker = os.path.exists('/dockerenv')
 
 DATABASES = {
     "default": {

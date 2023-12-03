@@ -1,6 +1,8 @@
 import json
 import uuid
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 
 # Create your models here.
 # https://stackoverflow.com/questions/33259477/how-to-recreate-a-deleted-table-with-django-migrations
@@ -28,4 +30,23 @@ class Patient(models.Model):
         return str(self.__dict__)
 
 # class Admin(models.Model):
-#     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+#     username = models.CharField(max_length=100, primary_key=True, blank=False)
+#     password = models.CharField(max_length=100, blank=False)
+
+class PatientToken(models.Model):
+    user = models.ForeignKey(Patient, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, editable=False)
+    creation_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self) -> str:
+        # return all fields
+        return str(self.__dict__)
+
+class DentistToken(models.Model):
+    user = models.ForeignKey(Dentist, on_delete=models.CASCADE)
+    token = models.UUIDField(default=uuid.uuid4, editable=False)
+    creation_date = models.DateTimeField(default=timezone.now)
+
+    def __str__(self) -> str:
+        # return all fields
+        return str(self.__dict__)
