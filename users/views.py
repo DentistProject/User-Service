@@ -1,3 +1,4 @@
+
 import datetime
 import json
 from django.shortcuts import get_object_or_404, render
@@ -6,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
+from django.utils import timezone
 from .serializers import PatientSerializer, DentistSerializer, PatientTokenSerializer, DentistTokenSerializer
 
 from rest_framework.decorators import (
@@ -174,10 +176,16 @@ def patient_signup(user):
 
 
 def patient_authenticate(token):
+    patient_timeout()
     if not token:
         raise NotFound("Unauthorized")
     print(token)
     get_object_or_404(PatientToken, token=token)
+
+def patient_timeout():
+    current_time = datetime.datetime.now()
+    expired_tokens = PatientToken.objects.filter(created_at__lt=datetime.timezone.now() - datetime.timedelta(hours=48)) # Filter tokens older than 48 hours, __lt = less than
+    expired_tokens.delete()
 
 
 class DentistViewSet(ModelViewSet):
@@ -320,10 +328,16 @@ def dentist_signup(user):
 
 
 def dentist_authenticate(token):
+    dentist_timeout()
     if not token:
         raise NotFound("Unauthorized")
     print(token)
     get_object_or_404(DentistToken, token=token)
+
+def dentist_timeout():
+    current_time = datetime.datetime.now()
+    expired_tokens = DentistToken().objects.filter(created_at__lt=datetime.timezone.now() - datetime.timedelta(days=7)) # Filter tokens older than 7 days, __lt = less than
+    expired_tokens.delete()
 
 
 def mqtt_logger(request, method):
