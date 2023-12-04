@@ -9,8 +9,7 @@ from django.core.validators import RegexValidator
 # https://stackoverflow.com/questions/33259477/how-to-recreate-a-deleted-table-with-django-migrations
 
 class Dentist(models.Model):
-    first_name = models.CharField(max_length=100, blank=False)
-    last_name = models.CharField(max_length=100, blank=False)
+    name = models.CharField(max_length=100, blank=False)
     email = models.EmailField(max_length=100, blank=False, unique=True)
     password = models.CharField(max_length=100, blank=False)
     location = models.CharField(max_length=100, blank=False)
