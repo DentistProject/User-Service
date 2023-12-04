@@ -72,7 +72,7 @@ class PatientViewSet(ModelViewSet):
         mqtt_logger(request, "POST")
         try:
             data = json.loads(request.body)
-            required_fields = ["name", "email", "password"]
+            required_fields = ["first_name","last_name", "email", "password", "phone_number"]
 
             for each in required_fields:
                 if not data[each]:
@@ -82,9 +82,11 @@ class PatientViewSet(ModelViewSet):
             hashed_password = make_password(data["password"])
 
             new_patient = Patient(
-                name=data["name"],
+                first_name=data["first_name"],
+                last_name=data["last_name"],
                 email=data["email"],
                 password=hashed_password,
+                phone_number=data["phone_number"],
             )
             serializer = PatientSerializer(new_patient)
             new_patient.save()
