@@ -1,4 +1,3 @@
-
 import datetime
 import json
 from django.shortcuts import get_object_or_404, render
@@ -8,7 +7,12 @@ from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
-from .serializers import PatientSerializer, DentistSerializer, PatientTokenSerializer, DentistTokenSerializer
+from .serializers import (
+    PatientSerializer,
+    DentistSerializer,
+    PatientTokenSerializer,
+    DentistTokenSerializer,
+)
 
 from rest_framework.decorators import (
     api_view,
@@ -72,7 +76,7 @@ class PatientViewSet(ModelViewSet):
         mqtt_logger(request, "POST")
         try:
             data = json.loads(request.body)
-            required_fields = ["first_name","last_name", "email", "password"]
+            required_fields = ["first_name", "last_name", "email", "password"]
 
             for each in required_fields:
                 if not data[each]:
@@ -90,12 +94,10 @@ class PatientViewSet(ModelViewSet):
             )
             serializer = PatientSerializer(new_patient)
             new_patient.save()
-            token = patient_signup(new_patient)
             return JsonResponse(
                 {
                     "message": "Patient was added successfully!",
                     "data": serializer.data,
-                    "token": token,
                 },
                 status=201,
             )
@@ -163,19 +165,21 @@ def patient_login(request):
 
         token, created = PatientToken.objects.get_or_create(user=user)
         tokenserializer = PatientTokenSerializer(token)
+        userserializer = PatientSerializer(user)
         # The token returned should be stored on the client side and used for future requests
-        return JsonResponse({"token": tokenserializer.data["token"]}, status=200)
+        return JsonResponse(
+            {
+             "user": userserializer.data,
+             "token": tokenserializer.data["token"]
+            },
+            status=200
+            )
     except KeyError as e:
         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Http404 as e:
+        return Response({"message": str(e)}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return JsonResponse({"message": str(e)}, status=500)
-
-
-
-def patient_signup(user):
-    token = PatientToken.objects.create(user=user)
-    return token.token
-
 
 def patient_authenticate(token):
     patient_timeout()
@@ -184,9 +188,12 @@ def patient_authenticate(token):
     print(token)
     get_object_or_404(PatientToken, token=token)
 
+
 def patient_timeout():
     current_time = datetime.datetime.now()
-    expired_tokens = PatientToken.objects.filter(created_at__lt=datetime.timezone.now() - datetime.timedelta(hours=48)) # Filter tokens older than 48 hours, __lt = less than
+    expired_tokens = PatientToken.objects.filter(
+        created_at__lt=datetime.timezone.now() - datetime.timedelta(hours=48)
+    )  # Filter tokens older than 48 hours, __lt = less than
     expired_tokens.delete()
 
 
@@ -312,19 +319,22 @@ def dentist_login(request):
             )
 
         token, created = DentistToken.objects.get_or_create(user=user)
-        serializer = DentistTokenSerializer(token)
+        token_serializer = DentistTokenSerializer(token)
+        dentist_serializer = DentistSerializer(user)
         print(request.user)
         # The token returned should be stored on the client side and used for future requests
-        return JsonResponse({"token": serializer.data["token"]}, status=200)
+        return JsonResponse(
+            {
+                "dentist": dentist_serializer.data,
+                "token": token_serializer.data["token"]
+            }, status=200
+        )
     except KeyError as e:
         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Http404 as e:
+        return Response({"message": str(e)}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return JsonResponse({"message": str(e)}, status=500)
-
-
-def dentist_signup(user):
-    token = DentistToken.objects.create(user=user)
-    return token.token
 
 
 def dentist_authenticate(token):
@@ -334,9 +344,12 @@ def dentist_authenticate(token):
     print(token)
     get_object_or_404(DentistToken, token=token)
 
+
 def dentist_timeout():
     current_time = datetime.datetime.now()
-    expired_tokens = DentistToken().objects.filter(created_at__lt=datetime.timezone.now() - datetime.timedelta(days=7)) # Filter tokens older than 7 days, __lt = less than
+    expired_tokens = DentistToken().objects.filter(
+        created_at__lt=datetime.timezone.now() - datetime.timedelta(days=7)
+    )  # Filter tokens older than 7 days, __lt = less than
     expired_tokens.delete()
 
 

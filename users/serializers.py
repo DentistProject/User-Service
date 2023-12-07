@@ -10,7 +10,7 @@ class PatientSerializer(serializers.ModelSerializer):
 class DentistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Dentist
-        fields = ["id", "first_name", "last_name", "email", "password", "location"]
+        fields = ["id", "name", "email", "password", "location"]
 
 class PatientTokenSerializer(serializers.ModelSerializer):
     class Meta:
