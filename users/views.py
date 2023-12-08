@@ -5,6 +5,7 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
 from .serializers import (
@@ -76,12 +77,6 @@ class PatientViewSet(ModelViewSet):
         mqtt_logger(request, "POST")
         try:
             data = json.loads(request.body)
-            required_fields = ["first_name", "last_name", "email", "password"]
-
-            for each in required_fields:
-                if not data[each]:
-                    raise ValidationError(f"{each.capitalize()} is required")
-
             validate_email(data["email"])  # From django.core.validators
             hashed_password = make_password(data["password"])
 
@@ -101,8 +96,10 @@ class PatientViewSet(ModelViewSet):
                 },
                 status=201,
             )
-        except ValidationError as e:
-            return JsonResponse({"message": f"{str(e)} is required"}, status=400)
+        except KeyError as e:
+            return JsonResponse({"message": f"Field {str(e).capitalize()} is required"}, status=400)
+        except IntegrityError:
+            return JsonResponse({"message": "A patient with this email or phone number already exists."}, status=400)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
 
@@ -230,17 +227,6 @@ class DentistViewSet(ModelViewSet):
         mqtt_logger(request, "POST")
         try:
             data = json.loads(request.body)
-            required_fields = [
-                "name",
-                "email",
-                "password",
-                "location",
-            ]
-
-            for each in required_fields:
-                if not data[each]:
-                    raise ValidationError(f"{each.capitalize()} is required")
-
             validate_email(data["email"])  # From django.core.validators
             hashed_password = make_password(data["password"])
 
@@ -256,10 +242,12 @@ class DentistViewSet(ModelViewSet):
                 {"message": "Dentist was added successfully!", "data": serializer.data},
                 status=201,
             )
-        except ValidationError as e:
-            return JsonResponse({"message": f"{str(e)} is required"}, status=400)
+        except KeyError as e:
+            return JsonResponse({"message": f"Field {str(e).capitalize()} is required"}, status=400)
+        except IntegrityError:
+            return JsonResponse({"message": "A patient with this email or phone number already exists."}, status=400)
         except Exception as e:
-            return JsonResponse({"message": str(e)}, status=500)
+            return JsonResponse({"message": f"{str(e)}"} , status=500)
 
     # PATCH dentist by id
     # Need authentication
