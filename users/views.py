@@ -67,7 +67,7 @@ class PatientViewSet(ModelViewSet):
             return JsonResponse(serializer.data, safe=False, status=200)
         except Patient.DoesNotExist:
             return JsonResponse({"message": "Patient not found!"}, status=404)
-        except NotFound as e:
+        except Http404 as e:
             return JsonResponse({"message": str(e)}, status=404)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
@@ -126,6 +126,10 @@ class PatientViewSet(ModelViewSet):
 
         except Patient.DoesNotExist:
             return JsonResponse({"message": "Patient not found!"}, status=404)
+        except Http404 as e:
+            return JsonResponse({"message": str(e)}, status=404)
+        except Exception as e:
+            return JsonResponse({"message": str(e)}, status=500)
 
     # DELETE patient by id
     # Need authentication
@@ -140,12 +144,15 @@ class PatientViewSet(ModelViewSet):
             )
         except Patient.DoesNotExist:
             return JsonResponse({"message": "Patient not found!"}, status=404)
+        except Http404 as e:
+            return JsonResponse({"message": str(e)}, status=404)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
 
 
 @api_view(["POST"])
 def patient_login(request):
+    mqtt_logger(request, "POST")
     try:
         if not request.data["password"] or not request.data["email"]:
             return Response(
@@ -189,7 +196,7 @@ def patient_authenticate(token):
 def patient_timeout():
     current_time = datetime.datetime.now()
     expired_tokens = PatientToken.objects.filter(
-        created_at__lt=datetime.timezone.now() - datetime.timedelta(hours=48)
+        creation_date__lt=current_time - datetime.timedelta(hours=48)
     )  # Filter tokens older than 48 hours, __lt = less than
     expired_tokens.delete()
 
@@ -219,6 +226,8 @@ class DentistViewSet(ModelViewSet):
             return JsonResponse(serializer.data, safe=False, status=200)
         except Dentist.DoesNotExist:
             return JsonResponse({"message": "Dentist not found!"}, status=404)
+        except Http404 as e:
+            return JsonResponse({"message": str(e)}, status=404)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
 
@@ -269,9 +278,12 @@ class DentistViewSet(ModelViewSet):
                 },
                 status=200,
             )
-
         except Dentist.DoesNotExist:
             return JsonResponse({"message": "Dentist not found!"}, status=404)
+        except Http404 as e:
+            return JsonResponse({"message": str(e)}, status=404)
+        except Exception as e:
+            return JsonResponse({"message": str(e)}, status=500)
 
     # DELETE dentist by id
     # Need authentication
@@ -286,12 +298,15 @@ class DentistViewSet(ModelViewSet):
             )
         except Dentist.DoesNotExist:
             return JsonResponse({"message": "Dentist not found!"}, status=404)
+        except Http404 as e:
+            return JsonResponse({"message": str(e)}, status=404)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
 
 
 @api_view(["POST"])
 def dentist_login(request):
+    mqtt_logger(request, "POST")
     try:
         if not request.data["password"] or not request.data["email"]:
             return Response(
@@ -336,7 +351,7 @@ def dentist_authenticate(token):
 def dentist_timeout():
     current_time = datetime.datetime.now()
     expired_tokens = DentistToken().objects.filter(
-        created_at__lt=datetime.timezone.now() - datetime.timedelta(days=7)
+        creation_date__lt=current_time - datetime.timedelta(days=7)
     )  # Filter tokens older than 7 days, __lt = less than
     expired_tokens.delete()
 
