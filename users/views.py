@@ -350,7 +350,7 @@ def dentist_authenticate(token):
 
 def dentist_timeout():
     current_time = datetime.datetime.now()
-    expired_tokens = DentistToken().objects.filter(
+    expired_tokens = DentistToken.objects.filter(
         creation_date__lt=current_time - datetime.timedelta(days=7)
     )  # Filter tokens older than 7 days, __lt = less than
     expired_tokens.delete()
@@ -379,40 +379,3 @@ def publish_message(message):
 def test_mqtt(request):
     publish_message("Hello from Django!")
     return HttpResponse("Message published")
-
-
-# @api_view(['POST'])
-# def login(request):
-#     try:
-#         if not request.data['password'] or not request.data['email']:
-#             return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
-#         user = get_object_or_404(Patient, email=request.data['email'])
-#         if not check_password(request.data['password'], user.password):
-#             return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-#         token, created = Token.objects.get(user=user.user)
-#         serializer = PatientSerializer(user)
-#         return Response({
-#             "token": token.key,
-#             "patient": serializer.data
-#         }, status=status.HTTP_200_OK)
-#     except KeyError as e:
-#         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# @api_view(['POST'])
-# def signup(request):
-#     serializer = PatientSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         user = Patient.objects.get(email=serializer.data['email'])
-#         token = Token.objects.create(user=user)
-#         return Response({
-#             "token": token.key,
-#             "patient": serializer.data
-#         }, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['GET'])
-# def test_token(request):
-#     return Response({})
