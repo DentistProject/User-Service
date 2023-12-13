@@ -1,4 +1,3 @@
-
 import datetime
 import json
 from django.shortcuts import get_object_or_404, render
@@ -6,9 +5,15 @@ from django.http import Http404, HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.validators import validate_email
 from django.core.exceptions import ValidationError
+from django.db import IntegrityError
 from django.contrib.auth.hashers import make_password, check_password
 from django.utils import timezone
-from .serializers import PatientSerializer, DentistSerializer, PatientTokenSerializer, DentistTokenSerializer
+from .serializers import (
+    PatientSerializer,
+    DentistSerializer,
+    PatientTokenSerializer,
+    DentistTokenSerializer,
+)
 
 from rest_framework.decorators import (
     api_view,
@@ -62,7 +67,7 @@ class PatientViewSet(ModelViewSet):
             return JsonResponse(serializer.data, safe=False, status=200)
         except Patient.DoesNotExist:
             return JsonResponse({"message": "Patient not found!"}, status=404)
-        except NotFound as e:
+        except Http404 as e:
             return JsonResponse({"message": str(e)}, status=404)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
@@ -72,33 +77,29 @@ class PatientViewSet(ModelViewSet):
         mqtt_logger(request, "POST")
         try:
             data = json.loads(request.body)
-            required_fields = ["name", "email", "password"]
-
-            for each in required_fields:
-                if not data[each]:
-                    raise ValidationError(f"{each.capitalize()} is required")
-
             validate_email(data["email"])  # From django.core.validators
             hashed_password = make_password(data["password"])
 
             new_patient = Patient(
-                name=data["name"],
+                first_name=data["first_name"],
+                last_name=data["last_name"],
                 email=data["email"],
                 password=hashed_password,
+                phone_number=data["phone_number"],
             )
             serializer = PatientSerializer(new_patient)
             new_patient.save()
-            token = patient_signup(new_patient)
             return JsonResponse(
                 {
                     "message": "Patient was added successfully!",
                     "data": serializer.data,
-                    "token": token,
                 },
                 status=201,
             )
-        except ValidationError as e:
-            return JsonResponse({"message": f"{str(e)} is required"}, status=400)
+        except KeyError as e:
+            return JsonResponse({"message": f"Field {str(e).capitalize()} is required"}, status=400)
+        except IntegrityError:
+            return JsonResponse({"message": "A patient with this email or phone number already exists."}, status=400)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
 
@@ -125,6 +126,10 @@ class PatientViewSet(ModelViewSet):
 
         except Patient.DoesNotExist:
             return JsonResponse({"message": "Patient not found!"}, status=404)
+        except Http404 as e:
+            return JsonResponse({"message": str(e)}, status=404)
+        except Exception as e:
+            return JsonResponse({"message": str(e)}, status=500)
 
     # DELETE patient by id
     # Need authentication
@@ -139,12 +144,15 @@ class PatientViewSet(ModelViewSet):
             )
         except Patient.DoesNotExist:
             return JsonResponse({"message": "Patient not found!"}, status=404)
+        except Http404 as e:
+            return JsonResponse({"message": str(e)}, status=404)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
 
 
 @api_view(["POST"])
 def patient_login(request):
+    mqtt_logger(request, "POST")
     try:
         if not request.data["password"] or not request.data["email"]:
             return Response(
@@ -161,19 +169,21 @@ def patient_login(request):
 
         token, created = PatientToken.objects.get_or_create(user=user)
         tokenserializer = PatientTokenSerializer(token)
+        userserializer = PatientSerializer(user)
         # The token returned should be stored on the client side and used for future requests
-        return JsonResponse({"token": tokenserializer.data["token"]}, status=200)
+        return JsonResponse(
+            {
+             "user": userserializer.data,
+             "token": tokenserializer.data["token"]
+            },
+            status=200
+            )
     except KeyError as e:
         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Http404 as e:
+        return Response({"message": str(e)}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return JsonResponse({"message": str(e)}, status=500)
-
-
-
-def patient_signup(user):
-    token = PatientToken.objects.create(user=user)
-    return token.token
-
 
 def patient_authenticate(token):
     patient_timeout()
@@ -182,9 +192,12 @@ def patient_authenticate(token):
     print(token)
     get_object_or_404(PatientToken, token=token)
 
+
 def patient_timeout():
     current_time = datetime.datetime.now()
-    expired_tokens = PatientToken.objects.filter(created_at__lt=datetime.timezone.now() - datetime.timedelta(hours=48)) # Filter tokens older than 48 hours, __lt = less than
+    expired_tokens = PatientToken.objects.filter(
+        creation_date__lt=current_time - datetime.timedelta(hours=48)
+    )  # Filter tokens older than 48 hours, __lt = less than
     expired_tokens.delete()
 
 
@@ -213,6 +226,8 @@ class DentistViewSet(ModelViewSet):
             return JsonResponse(serializer.data, safe=False, status=200)
         except Dentist.DoesNotExist:
             return JsonResponse({"message": "Dentist not found!"}, status=404)
+        except Http404 as e:
+            return JsonResponse({"message": str(e)}, status=404)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
 
@@ -221,24 +236,11 @@ class DentistViewSet(ModelViewSet):
         mqtt_logger(request, "POST")
         try:
             data = json.loads(request.body)
-            required_fields = [
-                "first_name",
-                "last_name",
-                "email",
-                "password",
-                "location",
-            ]
-
-            for each in required_fields:
-                if not data[each]:
-                    raise ValidationError(f"{each.capitalize()} is required")
-
             validate_email(data["email"])  # From django.core.validators
             hashed_password = make_password(data["password"])
 
             new_dentist = Dentist(
-                first_name=data["first_name"],
-                last_name=data["last_name"],
+                name=data["name"],
                 email=data["email"],
                 password=hashed_password,
                 location=data["location"],
@@ -249,10 +251,12 @@ class DentistViewSet(ModelViewSet):
                 {"message": "Dentist was added successfully!", "data": serializer.data},
                 status=201,
             )
-        except ValidationError as e:
-            return JsonResponse({"message": f"{str(e)} is required"}, status=400)
+        except KeyError as e:
+            return JsonResponse({"message": f"Field {str(e).capitalize()} is required"}, status=400)
+        except IntegrityError:
+            return JsonResponse({"message": "A patient with this email or phone number already exists."}, status=400)
         except Exception as e:
-            return JsonResponse({"message": str(e)}, status=500)
+            return JsonResponse({"message": f"{str(e)}"} , status=500)
 
     # PATCH dentist by id
     # Need authentication
@@ -274,9 +278,12 @@ class DentistViewSet(ModelViewSet):
                 },
                 status=200,
             )
-
         except Dentist.DoesNotExist:
             return JsonResponse({"message": "Dentist not found!"}, status=404)
+        except Http404 as e:
+            return JsonResponse({"message": str(e)}, status=404)
+        except Exception as e:
+            return JsonResponse({"message": str(e)}, status=500)
 
     # DELETE dentist by id
     # Need authentication
@@ -291,12 +298,15 @@ class DentistViewSet(ModelViewSet):
             )
         except Dentist.DoesNotExist:
             return JsonResponse({"message": "Dentist not found!"}, status=404)
+        except Http404 as e:
+            return JsonResponse({"message": str(e)}, status=404)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
 
 
 @api_view(["POST"])
 def dentist_login(request):
+    mqtt_logger(request, "POST")
     try:
         if not request.data["password"] or not request.data["email"]:
             return Response(
@@ -312,19 +322,22 @@ def dentist_login(request):
             )
 
         token, created = DentistToken.objects.get_or_create(user=user)
-        serializer = DentistTokenSerializer(token)
+        token_serializer = DentistTokenSerializer(token)
+        dentist_serializer = DentistSerializer(user)
         print(request.user)
         # The token returned should be stored on the client side and used for future requests
-        return JsonResponse({"token": serializer.data["token"]}, status=200)
+        return JsonResponse(
+            {
+                "dentist": dentist_serializer.data,
+                "token": token_serializer.data["token"]
+            }, status=200
+        )
     except KeyError as e:
         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    except Http404 as e:
+        return Response({"message": str(e)}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return JsonResponse({"message": str(e)}, status=500)
-
-
-def dentist_signup(user):
-    token = DentistToken.objects.create(user=user)
-    return token.token
 
 
 def dentist_authenticate(token):
@@ -334,9 +347,12 @@ def dentist_authenticate(token):
     print(token)
     get_object_or_404(DentistToken, token=token)
 
+
 def dentist_timeout():
     current_time = datetime.datetime.now()
-    expired_tokens = DentistToken().objects.filter(created_at__lt=datetime.timezone.now() - datetime.timedelta(days=7)) # Filter tokens older than 7 days, __lt = less than
+    expired_tokens = DentistToken.objects.filter(
+        creation_date__lt=current_time - datetime.timedelta(days=7)
+    )  # Filter tokens older than 7 days, __lt = less than
     expired_tokens.delete()
 
 
@@ -363,40 +379,3 @@ def publish_message(message):
 def test_mqtt(request):
     publish_message("Hello from Django!")
     return HttpResponse("Message published")
-
-
-# @api_view(['POST'])
-# def login(request):
-#     try:
-#         if not request.data['password'] or not request.data['email']:
-#             return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-
-#         user = get_object_or_404(Patient, email=request.data['email'])
-#         if not check_password(request.data['password'], user.password):
-#             return Response({"message": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
-#         token, created = Token.objects.get(user=user.user)
-#         serializer = PatientSerializer(user)
-#         return Response({
-#             "token": token.key,
-#             "patient": serializer.data
-#         }, status=status.HTTP_200_OK)
-#     except KeyError as e:
-#         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# @api_view(['POST'])
-# def signup(request):
-#     serializer = PatientSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         user = Patient.objects.get(email=serializer.data['email'])
-#         token = Token.objects.create(user=user)
-#         return Response({
-#             "token": token.key,
-#             "patient": serializer.data
-#         }, status=status.HTTP_201_CREATED)
-#     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-# @api_view(['GET'])
-# def test_token(request):
-#     return Response({})
