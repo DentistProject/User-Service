@@ -207,7 +207,7 @@ class DentistViewSet(ModelViewSet):
     def retrieve(self, request, pk=None):
         mqtt_logger(request, "GET")
         try:
-            dentist_authenticate(request.headers["Authorization"])
+            # dentist_authenticate(request.headers["Authorization"])
             dentist = Dentist.objects.get(pk=pk)
             serializer = DentistSerializer(dentist)
             return JsonResponse(serializer.data, safe=False, status=200)
@@ -259,7 +259,7 @@ class DentistViewSet(ModelViewSet):
     def partial_update(self, request, pk=None):
         mqtt_logger(request, "PATCH")
         try:
-            dentist_authenticate(request.headers["Authorization"])
+            # dentist_authenticate(request.headers["Authorization"])
             dentist = Dentist.objects.get(pk=pk)
             request_data = json.loads(request.body)
             for each in request_data.keys():
@@ -283,7 +283,7 @@ class DentistViewSet(ModelViewSet):
     def destroy(self, request, pk=None):
         mqtt_logger(request, "DELETE")
         try:
-            dentist_authenticate(request.headers["Authorization"])
+            # dentist_authenticate(request.headers["Authorization"])
             dentist = Dentist.objects.get(pk=pk)
             dentist.delete()
             return JsonResponse(
