@@ -9,18 +9,22 @@ variables:
   DB_HOST: localhost
   DB_PORT: 5432
   DJANGO_SETTINGS_MODULE: "UserService.settings"
+  CONTAINER_IMAGE: $CI_REGISTRY_IMAGE:$CI_PIPELINE_IID
 
 services:
   - postgres:latest
 
-build:
+build-job:
+  tags:
+    - vm-shell
   stage: build
   script:
-  - python -m virtualenv venv
-  - source venv/bin/activate
-  - pip install -r requirements.txt
-
-test:
-  stage: test
-  script:
-    - python manage.py test
+    - echo "creating virtual environment for the project..."
+    - virtualenv $(pwd)/venv
+    - source $(pwd)/venv/bin/activate
+    - echo "Installing requirements..."
+    - pip install -r requirements.txt
+    - deactivate
+  artifacts:
+    paths:
+      - $(pwd)/venv
