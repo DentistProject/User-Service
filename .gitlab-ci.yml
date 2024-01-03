@@ -9,6 +9,7 @@ services:
 
 variables:
   NEWMAN_IMAGE: postman/newman:alpine
+  POSTMAN_COLLECTION_FILE: UserServiceCI.postman_collection.json
 
 # before_script:
 #    # Install Docker Compose
@@ -28,3 +29,5 @@ test_job:
   stage: test
   script:
     - docker-compose up -d
+    - docker-compose run web python manage.py migrate
+    - docker run --rm -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
