@@ -89,7 +89,7 @@
 		},
 		{
 			"key": "host",
-			"value": "localhost",
+			"value": "host.docker.internal",
 			"type": "string"
 		}
 	]

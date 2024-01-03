@@ -15,6 +15,8 @@ services:
       DB_PORT: 5432
       DEBUG: True
       SECRET_KEY: 6b1f53f85e4d136b296fb8542285e954
+    extra_hosts:
+     - "host.docker.internal:host-gateway"
 
 
   db:
