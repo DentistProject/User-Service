@@ -8,7 +8,7 @@ services:
   - docker:dind
 
 variables:
-  NEWMAN_IMAGE: postman/newman:alpine
+  NEWMAN_IMAGE: postman/newman:latest
   POSTMAN_COLLECTION_FILE: UserServiceCI.postman_collection.json
 
 # before_script:
