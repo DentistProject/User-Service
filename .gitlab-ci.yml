@@ -16,7 +16,10 @@ services:
 build:
   stage: build
   script:
-    - pip install -r requirements.txt
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
 
 test:
   stage: test
