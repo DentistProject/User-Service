@@ -27,7 +27,7 @@ build_job:
 connection_job:
   tags:
     - shell
-  stage: build
+  stage: test
   script:
     - netstat -tuln
     - curl http://127.0.0.1:8000
