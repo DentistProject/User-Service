@@ -16,7 +16,7 @@ services:
 
 build-job:
   tags:
-    - vm-shell
+    - shell
   stage: build
   script:
     - echo "creating virtual environment for the project..."
