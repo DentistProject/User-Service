@@ -2,14 +2,14 @@ image: docker:latest
 
 stages:
   - build
-  - test
+  - automated-api-tests
 
 services:
   - docker:dind
 
-variables:
-  NEWMAN_IMAGE: postman/newman:latest
-  POSTMAN_COLLECTION_FILE: UserServiceCI.postman_collection.json
+# variables:
+#   NEWMAN_IMAGE: postman/newman:latest
+#   POSTMAN_COLLECTION_FILE: UserServiceCI.postman_collection.json
 
 # before_script:
 #    # Install Docker Compose
@@ -23,14 +23,30 @@ build_job:
   script:
     - docker-compose build
 
-test_job:
-  tags:
-    - docker-build
-  stage: test
+# test_job:
+#   tags:
+#     - docker-build
+#   stage: test
+#   script:
+#     - docker-compose up -d
+#     - docker-compose run web python manage.py migrate
+#     - sleep 5
+#     - docker compose restart web
+#     - docker run --rm -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
+
+#From postman
+automated-api-tests:
+  stage: automated-api-tests
+  image: cimg/base:2021.04
+  before_script:
+    # Installing Postman CLI
+    - curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
   script:
+    # Start server
     - docker-compose up -d
-    - docker compose restart web
-    - sleep 10
     - docker-compose run web python manage.py migrate
-    - sleep 10
-    - docker run --rm -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
+    - sleep 5
+    - docker compose restart web
+    # Login using your Postman API keys
+    - postman login --with-api-key PMAK-6595d85ca3980932d8c69c49-ffa21a5fe016f18611e0f1bb266abe434c
+    - postman collection run "29736996-9c6f7649-0123-4189-856a-aeb0607b610f"
