@@ -22,12 +22,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://host.docker.internal:{{port}}/api/v1/patients/",
+					"raw": "http://{{host}}:{{port}}/api/v1/patients/",
 					"protocol": "http",
 					"host": [
-						"host",
-						"docker",
-						"internal"
+						"{{host}}"
 					],
 					"port": "{{port}}",
 					"path": [
@@ -46,12 +44,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://host.docker.internal:{{port}}/api/v1/patients/",
+					"raw": "http://{{host}}:{{port}}/api/v1/patients/",
 					"protocol": "http",
 					"host": [
-						"host",
-						"docker",
-						"internal"
+						"{{host}}"
 					],
 					"port": "{{port}}",
 					"path": [
@@ -89,6 +85,11 @@
 		{
 			"key": "port",
 			"value": "8000",
+			"type": "string"
+		},
+		{
+			"key": "host",
+			"value": "localhost",
 			"type": "string"
 		}
 	]
