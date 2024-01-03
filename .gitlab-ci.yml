@@ -1,3 +1,5 @@
+image: docker:latest
+
 stages:
   - build
   - run
@@ -7,6 +9,8 @@ services:
   - docker:dind
 
 variables:
+  DOCKER_DRIVER: overlay2
+  DOCKER_HOST: tcp://localhost:2375
   NEWMAN_IMAGE: postman/newman:alpine
 
 build_job:
