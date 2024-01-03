@@ -89,7 +89,7 @@
 		},
 		{
 			"key": "host",
-			"value": "host.docker.internal",
+			"value": "127.0.0.1",
 			"type": "string"
 		}
 	]
