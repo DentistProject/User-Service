@@ -13,6 +13,9 @@ variables:
   DOCKER_HOST: tcp://localhost:2375
   NEWMAN_IMAGE: postman/newman:alpine
 
+before_script:
+  - sed -i '/java_home/d' ~/.bash_profile
+
 build_job:
   stage: build
   script:
