@@ -73,7 +73,9 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"pm.sendRequest(\"http://127.0.0.1:8080\", function (err, response) {",
+					"    console.log(response.json());",
+					"});"
 				]
 			}
 		},
