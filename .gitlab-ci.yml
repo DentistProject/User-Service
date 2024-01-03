@@ -21,6 +21,6 @@ services:
   - postgres:latest
 
 build:
-  stage: test
+  stage: build
   script:
     - python manage.py test
