@@ -30,8 +30,8 @@ connection_job:
   stage: build
   script:
     - netstat -tuln
-    - curl http://localhost:8000
-    - telnet localhost 8000
+    - curl http://127.0.0.1:8000
+    - telnet 127.0.0.1 8000
 
 
 test_job:
