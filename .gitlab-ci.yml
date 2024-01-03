@@ -21,4 +21,3 @@ test:
   stage: test
   script:
     - python manage.py test
-```
