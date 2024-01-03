@@ -15,10 +15,6 @@ variables:
 #   - apk add --update py-pip &&
 #     pip install docker-compose
 
-before_script:
-  - docker info
-  - docker-compose --version
-
 build_job:
   tags:
     - docker
