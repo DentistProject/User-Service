@@ -7,6 +7,11 @@ services:
 
 variables:
   NEWMAN_IMAGE: postman/newman:alpine
+  
+before_script:
+   # Install Docker Compose
+  - apk add --update py-pip &&
+    pip install docker-compose
 
 build_job:
   tags:
