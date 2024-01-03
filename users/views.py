@@ -19,6 +19,7 @@ from rest_framework.decorators import (
     api_view,
     authentication_classes,
     permission_classes,
+    action,
 )
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
@@ -148,6 +149,18 @@ class PatientViewSet(ModelViewSet):
             return JsonResponse({"message": str(e)}, status=404)
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
+
+
+@action(detail=False, methods=['delete'])
+def patient_delete_all(request):
+    mqtt_logger(request, "DELETE")
+    #TODO: Add authentication
+    try:
+        Patient.objects.all().delete()
+        return JsonResponse({"message": "All patients deleted"}, status=200)
+    except Exception as e:
+        return JsonResponse({"message": str(e)}, status=500)
+
 
 
 @api_view(["POST"])
@@ -339,6 +352,15 @@ def dentist_login(request):
     except Exception as e:
         return JsonResponse({"message": str(e)}, status=500)
 
+@action(detail=False, methods=['delete'])
+def dentist_delete_all(request):
+    mqtt_logger(request, "DELETE")
+    #TODO: Add authentication
+    try:
+        Patient.objects.all().delete()
+        return JsonResponse({"message": "All dentists deleted"}, status=200)
+    except Exception as e:
+        return JsonResponse({"message": str(e)}, status=500)
 
 def dentist_authenticate(token):
     dentist_timeout()
