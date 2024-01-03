@@ -17,14 +17,14 @@ variables:
 
 build_job:
   tags:
-    - docker
+    - docker-build
   stage: build
   script:
     - docker-compose build
 
 test_job:
   tags:
-    - docker
+    - docker-build
   stage: test
   script:
     - docker-compose up -d
