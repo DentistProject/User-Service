@@ -22,13 +22,12 @@
 					}
 				},
 				"url": {
-					"raw": "http://127.0.0.1:{{port}}/api/v1/patients/",
+					"raw": "http://host.docker.internal:{{port}}/api/v1/patients/",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"host",
+						"docker",
+						"internal"
 					],
 					"port": "{{port}}",
 					"path": [
@@ -47,13 +46,12 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://127.0.0.1:{{port}}/api/v1/patients/",
+					"raw": "http://host.docker.internal:{{port}}/api/v1/patients/",
 					"protocol": "http",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"host",
+						"docker",
+						"internal"
 					],
 					"port": "{{port}}",
 					"path": [
@@ -73,7 +71,7 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					"pm.sendRequest(\"http://127.0.0.1:8080\", function (err, response) {",
+					"pm.sendRequest(\"http://127.0.0.1:8000\", function (err, response) {",
 					"    console.log(response.json());",
 					"});"
 				]
