@@ -2,29 +2,22 @@ stages:
   - build
   - test
 
-variables:
-  DB_NAME: UserDB
-  DB_USER: postgres
-  DB_PASSWORD: postgres
-  DB_HOST: localhost
-  DB_PORT: 5432
-  DJANGO_SETTINGS_MODULE: "UserService.settings"
-  CONTAINER_IMAGE: $CI_REGISTRY_IMAGE:$CI_PIPELINE_IID
-
 services:
-  - postgres:latest
+  - docker:dind
 
-build-job:
+variables:
+  NEWMAN_IMAGE: postman/newman:alpine
+
+build_job:
   tags:
-    - shell
+    - docker
   stage: build
   script:
-    - echo "creating virtual environment for the project..."
-    - virtualenv $(pwd)/venv
-    - source $(pwd)/venv/bin/activate
-    - echo "Installing requirements..."
-    - pip install -r requirements.txt
-    - deactivate
-  artifacts:
-    paths:
-      - $(pwd)/venv
+    - docker-compose build
+
+test_job:
+  tags:
+    - docker
+  stage: test
+  script:
+    - docker-compose up -d
