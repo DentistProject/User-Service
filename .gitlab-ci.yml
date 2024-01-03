@@ -33,6 +33,7 @@ test_job:
     - docker compose restart web
     - docker-compose run web python manage.py migrate
     - sleep 5
-    - echo $HOST_IP
-    - cat $POSTMAN_COLLECTION_FILE
+    - netstat -tuln
+    - curl http://localhost:8000
+    - telnet localhost 8000
     - docker run --rm -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE --env-var host_ip=$HOST_IP
