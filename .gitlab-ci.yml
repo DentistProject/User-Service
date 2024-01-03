@@ -1,33 +1,26 @@
-image: docker:latest
-
 stages:
   - build
-  - run
-  - test
-
-services:
-  - docker:dind
 
 variables:
-  DOCKER_DRIVER: overlay2
-  DOCKER_HOST: tcp://localhost:2375
-  NEWMAN_IMAGE: postman/newman:alpine
+  DB_NAME: UserDB
+  DB_USER: postgres
+  DB_PASSWORD: postgres
+  DB_HOST: localhost
+  DB_PORT: 5432
+  DJANGO_SETTINGS_MODULE: "UserService.settings"
 
 before_script:
-  - sed -i '/java_home/d' ~/.bash_profile
+  - apt-get update -qy
+  - apt-get install -y python3-dev python3-pip
+  - pip install virtualenv
+  - virtualenv venv
+  - source venv/bin/activate
+  - pip install -r requirements.txt
 
-build_job:
-  stage: build
-  script:
-    - docker-compose build
+services:
+  - postgres:latest
 
-run_job:
-  stage: run
-  script:
-    - docker-compose up -d
-    - docker-compose run web python manage.py migrate
-
-test_job:
+build:
   stage: test
   script:
-    - docker run --rm -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run /etc/newman/UserServiceCI.postman_collection.json
+    - python manage.py test
