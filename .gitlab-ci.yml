@@ -1,3 +1,5 @@
+image: tmaier/docker-compose:latest
+
 stages:
   - build
   - test
@@ -7,11 +9,15 @@ services:
 
 variables:
   NEWMAN_IMAGE: postman/newman:alpine
-  
+
+# before_script:
+#    # Install Docker Compose
+#   - apk add --update py-pip &&
+#     pip install docker-compose
+
 before_script:
-   # Install Docker Compose
-  - apk add --update py-pip &&
-    pip install docker-compose
+  - docker info
+  - docker-compose --version
 
 build_job:
   tags:
