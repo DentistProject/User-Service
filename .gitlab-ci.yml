@@ -1,0 +1,26 @@
+stages:
+  - build
+  - run
+  - test
+
+services:
+  - docker:dind
+
+variables:
+  NEWMAN_IMAGE: postman/newman:alpine
+
+build_job:
+  stage: build
+  script:
+    - docker-compose build
+
+run_job:
+  stage: run
+  script:
+    - docker-compose up -d
+    - docker-compose run web python manage.py migrate
+
+test_job:
+  stage: test
+  script:
+    - docker run --rm -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run /etc/newman/UserServiceCI.postman_collection.json

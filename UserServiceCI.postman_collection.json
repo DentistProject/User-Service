@@ -1,0 +1,97 @@
+{
+	"info": {
+		"_postman_id": "9c6f7649-0123-4189-856a-aeb0607b610f",
+		"name": "UserServiceCI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29736996",
+		"_collection_link": "https://martian-escape-967689.postman.co/workspace/New-Team-Workspace~e3f4f870-174e-42d0-9bdf-068480e1b5c7/collection/29736996-9c6f7649-0123-4189-856a-aeb0607b610f?action=share&source=collection_link&creator=29736996"
+	},
+	"item": [
+		{
+			"name": "Post patient Copy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"first_name\": \"zepei\",\r\n    \"last_name\": \"zhao\",\r\n    \"email\": \"123@gmail.com\",\r\n    \"password\": \"123\",\r\n    \"phone_number\": 12234546464\r\n\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:{{port}}/api/v1/patients/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"v1",
+						"patients",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all patient Copy",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:{{port}}/api/v1/patients/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "{{port}}",
+					"path": [
+						"api",
+						"v1",
+						"patients",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "port",
+			"value": "8000",
+			"type": "string"
+		}
+	]
+}
