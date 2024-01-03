@@ -22,18 +22,25 @@ build_job:
   stage: build
   script:
     - docker-compose build
+    - docker-compose up -d
+
+connection_job:
+  tags:
+    - shell
+  stage: build
+  script:
+    - netstat -tuln
+    - curl http://localhost:8000
+    - telnet localhost 8000
+
 
 test_job:
   tags:
     - docker-build
   stage: test
   script:
-    - docker-compose up -d
     - sleep 5
     - docker compose restart web
     - docker-compose run web python manage.py migrate
     - sleep 5
-    - netstat -tuln
-    - curl http://localhost:8000
-    - telnet localhost 8000
-    - docker run --rm -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE --env-var host_ip=$HOST_IP
+    - docker run --rm --network container:web -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
