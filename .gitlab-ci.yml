@@ -16,8 +16,7 @@ services:
 build:
   stage: build
   script:
-  - pip install virtualenv
-  - virtualenv venv
+  - python -m virtualenv venv
   - source venv/bin/activate
   - pip install -r requirements.txt
 
