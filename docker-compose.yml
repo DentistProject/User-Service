@@ -17,8 +17,7 @@ services:
       SECRET_KEY: 6b1f53f85e4d136b296fb8542285e954
     extra_hosts:
      - "host.docker.internal:host-gateway"
-    networks:
-      - userservice
+
 
 
   db:
@@ -29,12 +28,7 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    networks:
-      - userservice
+
 
 volumes:
   postgres_data:
-
-networks:
-  userservice:
-    driver: bridge
