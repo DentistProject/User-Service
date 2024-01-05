@@ -39,8 +39,9 @@ test_job:
     - docker-build
   stage: test
   script:
+    - docker network ls
     - sleep 5
     - docker compose restart web
     - docker-compose run web python manage.py migrate
     - sleep 5
-    - docker run --rm --network userservice -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
+    - docker run --rm --network users-service_userservice -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
