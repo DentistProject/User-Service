@@ -44,4 +44,5 @@ test_job:
     - docker compose restart web
     - docker-compose run web python manage.py migrate
     - sleep 5
-    - docker run --rm --network users-service_userservice --add-host=127.0.0.1:web -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
+    - docker run -d --network users-service_userservice --name proxy -p 8000:8000 alpine/socat tcp-listen:8000,fork,reuseaddr tcp-connect:web:8000
+    - docker run --rm --network users-service_userservice -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
