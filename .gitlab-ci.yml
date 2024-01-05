@@ -29,9 +29,10 @@ test_job:
     - docker-build
   stage: test
   script:
+    - docker-compose run web python manage.py migrate
+    - docker-compose up -d
+    - sleep 10
     - docker network ls
     - docker-compose ps
-    - docker-compose run web python manage.py migrate
-    - sleep 10
-    - docker run --network users-service_default busybox nc -zv users-service_web 8000
     - docker run --network users-service_default -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
+    - docker run --network users-service_default busybox nc -zv users-service_web 8000
