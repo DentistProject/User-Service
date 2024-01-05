@@ -89,7 +89,7 @@
 		},
 		{
 			"key": "host",
-			"value": "web",
+			"value": "localhost",
 			"type": "string"
 		}
 	]
