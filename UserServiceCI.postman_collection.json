@@ -755,7 +755,7 @@
         },
         {
             "key": "host",
-            "value": "host.docker.internal",
+            "value": "localhost",
             "type": "string"
         }
     ]
