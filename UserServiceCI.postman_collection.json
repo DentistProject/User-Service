@@ -755,7 +755,7 @@
         },
         {
             "key": "host",
-            "value": "users-service_web",
+            "value": "host.docker.internal",
             "type": "string"
         }
     ]
