@@ -30,3 +30,7 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  userservice:
+    driver: bridge
