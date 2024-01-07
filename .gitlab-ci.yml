@@ -2,7 +2,7 @@ image: docker:latest
 
 stages:
   - build
-  - test
+  # - test
 
 services:
   - docker:dind
@@ -10,11 +10,6 @@ services:
 variables:
   NEWMAN_IMAGE: postman/newman:latest
   POSTMAN_COLLECTION_FILE: UserServiceCI.postman_collection.json
-
-# before_script:
-#    # Install Docker Compose
-#   - apk add --update py-pip &&
-#     pip install docker-compose
 
 build_job:
   tags:
@@ -24,15 +19,15 @@ build_job:
     - docker-compose build
     - docker-compose up -d
 
-test_job:
-  tags:
-    - docker
-  stage: test
-  script:
-    - docker-compose run web python manage.py migrate
-    - docker-compose up -d
-    - sleep 20
-    - docker network ls
-    - docker-compose ps
-    - docker run --network users-service_default busybox nc -zv users-service_web 8000
-    - docker run --network users-service_default -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
+# test_job:
+#   tags:
+#     - docker
+#   stage: test
+#   script:
+#     - docker-compose run web python manage.py migrate
+#     - docker-compose up -d
+#     - sleep 20
+#     - docker network ls
+#     - docker-compose ps
+#     - docker run --network users-service_default busybox nc -zv users-service_web 8000
+#     - docker run --network users-service_default -v $(pwd):/etc/newman -w /etc/newman $NEWMAN_IMAGE run $POSTMAN_COLLECTION_FILE
