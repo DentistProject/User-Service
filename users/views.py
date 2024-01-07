@@ -19,6 +19,7 @@ from rest_framework.decorators import (
     api_view,
     authentication_classes,
     permission_classes,
+    action,
 )
 from rest_framework.viewsets import ModelViewSet
 from rest_framework import status
@@ -97,9 +98,16 @@ class PatientViewSet(ModelViewSet):
                 status=201,
             )
         except KeyError as e:
-            return JsonResponse({"message": f"Field {str(e).capitalize()} is required"}, status=400)
+            return JsonResponse(
+                {"message": f"Field {str(e).capitalize()} is required"}, status=400
+            )
         except IntegrityError:
-            return JsonResponse({"message": "A patient with this email or phone number already exists."}, status=400)
+            return JsonResponse(
+                {
+                    "message": "A patient with this email or phone number already exists."
+                },
+                status=400,
+            )
         except Exception as e:
             return JsonResponse({"message": str(e)}, status=500)
 
@@ -150,6 +158,17 @@ class PatientViewSet(ModelViewSet):
             return JsonResponse({"message": str(e)}, status=500)
 
 
+@action(detail=False, methods=["delete"])
+def patient_delete_all(request):
+    mqtt_logger(request, "DELETE")
+    # TODO: Add authentication
+    try:
+        Patient.objects.all().delete()
+        return JsonResponse({"message": "All patients deleted"}, status=200)
+    except Exception as e:
+        return JsonResponse({"message": str(e)}, status=500)
+
+
 @api_view(["POST"])
 def patient_login(request):
     mqtt_logger(request, "POST")
@@ -172,18 +191,16 @@ def patient_login(request):
         userserializer = PatientSerializer(user)
         # The token returned should be stored on the client side and used for future requests
         return JsonResponse(
-            {
-             "user": userserializer.data,
-             "token": tokenserializer.data["token"]
-            },
-            status=200
-            )
+            {"user": userserializer.data, "token": tokenserializer.data["token"]},
+            status=200,
+        )
     except KeyError as e:
         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Http404 as e:
         return Response({"message": str(e)}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return JsonResponse({"message": str(e)}, status=500)
+
 
 def patient_authenticate(token):
     patient_timeout()
@@ -252,11 +269,18 @@ class DentistViewSet(ModelViewSet):
                 status=201,
             )
         except KeyError as e:
-            return JsonResponse({"message": f"Field {str(e).capitalize()} is required"}, status=400)
+            return JsonResponse(
+                {"message": f"Field {str(e).capitalize()} is required"}, status=400
+            )
         except IntegrityError:
-            return JsonResponse({"message": "A patient with this email or phone number already exists."}, status=400)
+            return JsonResponse(
+                {
+                    "message": "A dentist with this email or phone number already exists."
+                },
+                status=400,
+            )
         except Exception as e:
-            return JsonResponse({"message": f"{str(e)}"} , status=500)
+            return JsonResponse({"message": f"{str(e)}"}, status=500)
 
     # PATCH dentist by id
     # Need authentication
@@ -329,13 +353,25 @@ def dentist_login(request):
         return JsonResponse(
             {
                 "dentist": dentist_serializer.data,
-                "token": token_serializer.data["token"]
-            }, status=200
+                "token": token_serializer.data["token"],
+            },
+            status=200,
         )
     except KeyError as e:
         return Response({"message": str(e)}, status=status.HTTP_400_BAD_REQUEST)
     except Http404 as e:
         return Response({"message": str(e)}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return JsonResponse({"message": str(e)}, status=500)
+
+
+@action(detail=False, methods=["delete"])
+def dentist_delete_all(request):
+    mqtt_logger(request, "DELETE")
+    # TODO: Add authentication
+    try:
+        Patient.objects.all().delete()
+        return JsonResponse({"message": "All dentists deleted"}, status=200)
     except Exception as e:
         return JsonResponse({"message": str(e)}, status=500)
 

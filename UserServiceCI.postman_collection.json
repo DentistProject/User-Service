@@ -1,0 +1,762 @@
+{
+    "info": {
+        "_postman_id": "9c6f7649-0123-4189-856a-aeb0607b610f",
+        "name": "UserServiceCI",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_exporter_id": "29736996",
+        "_collection_link": "https://martian-escape-967689.postman.co/workspace/New-Team-Workspace~e3f4f870-174e-42d0-9bdf-068480e1b5c7/collection/29736996-9c6f7649-0123-4189-856a-aeb0607b610f?action=share&source=collection_link&creator=29736996"
+    },
+    "item": [
+        {
+            "name": "Patient",
+            "item": [
+                {
+                    "name": "Post patient",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "\r",
+                                    "pm.test(\"Response status code is 201\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(201);\r",
+                                    "});\r",
+                                    "\r",
+                                    "// Stores the patientId in an environment or global variable\r",
+                                    "var patientId = pm.response.json().data.id;\r",
+                                    "pm.globals.set(\"patientId\", patientId);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"first_name\": \"user\",\r\n    \"last_name\": \"1\",\r\n    \"email\": \"1@gmail.com\",\r\n    \"password\": \"123\",\r\n    \"phone_number\": 12234546464\r\n\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/patients/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patients",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Post patient 2",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Response status code is 201\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(201);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"first_name\": \"user\",\r\n    \"last_name\": \"2\",\r\n    \"email\": \"2@gmail.com\",\r\n    \"password\": \"123\",\r\n    \"phone_number\": 12234546464\r\n\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/patients/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patients",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Patient login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {\r",
+                                    "    pm.response.to.have.status(200);\r",
+                                    "});\r",
+                                    "// Stores the token in an environment or global variable\r",
+                                    "var token = pm.response.json().token;\r",
+                                    "pm.globals.set(\"token\", token);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer"
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"1@gmail.com\",\n    \"password\": \"123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/patient/login/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "patient",
+                                "login",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get all patient",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Response status code is 200\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(200);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/patients/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patients",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get patient by ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Response status code is 200\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(200);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "{{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/patients/{{patientId}}/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patients",
+                                "{{patientId}}",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Patch patient by ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {\r",
+                                    "    pm.response.to.have.status(200);\r",
+                                    "});\r",
+                                    "\r",
+                                    "pm.test(\"Test for the name change\", function () {\r",
+                                    "    var data = pm.response.json().data;\r",
+                                    "    pm.expect(data.first_name).to.equal(\"Changed name\");\r",
+                                    "\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "{{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"first_name\": \"Changed name\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/patients/{{patientId}}/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patients",
+                                "{{patientId}}",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete patient by ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Response status code is 204\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(204);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "{{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/patients/{{patientId}}/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "patients",
+                                "{{patientId}}",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete all patient",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Response status code is 200\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(200);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/patient/delete_all",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "patient",
+                                "delete_all"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        },
+        {
+            "name": "Dentist",
+            "item": [
+                {
+                    "name": "Post dentist",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "\r",
+                                    "pm.test(\"Response status code is 201\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(201);\r",
+                                    "});\r",
+                                    "\r",
+                                    "// Stores the dentistId in an environment or global variable\r",
+                                    "var dentistId = pm.response.json().data.id;\r",
+                                    "pm.globals.set(\"dentistId\", dentistId);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"name\": \"dentist 1\",\r\n    \"email\": \"doc1@toothcheck.com\",\r\n    \"password\": \"test123\",\r\n    \"location\": \"Lindholmen 41766\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/dentists/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "dentists",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Post dentist 2",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "\r",
+                                    "pm.test(\"Response status code is 201\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(201);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\r\n    \"name\": \"dentist 2\",\r\n    \"email\": \"doc2@toothcheck.com\",\r\n    \"password\": \"test123\",\r\n    \"location\": \"Lindholmen 41766\"\r\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/dentists/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "dentists",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Dentist login",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {\r",
+                                    "    pm.response.to.have.status(200);\r",
+                                    "});\r",
+                                    "// Stores the token in an environment or global variable\r",
+                                    "var token = pm.response.json().token;\r",
+                                    "pm.globals.set(\"token\", token);"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "auth": {
+                            "type": "bearer"
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"doc1@toothcheck.com\",\n    \"password\": \"test123\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/dentist/login/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "dentist",
+                                "login",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get all dentists",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Response status code is 200\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(200);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/dentists/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "dentists",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Get dentist by ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Response status code is 200\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(200);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "{{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/dentists/{{dentistId}}/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "dentists",
+                                "{{dentistId}}",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Patch dentist by ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {\r",
+                                    "    pm.response.to.have.status(200);\r",
+                                    "});\r",
+                                    "\r",
+                                    "pm.test(\"Test for the name change\", function () {\r",
+                                    "    var data = pm.response.json().data;\r",
+                                    "    pm.expect(data.name).to.equal(\"new name\");\r",
+                                    "\r",
+                                    "});\r",
+                                    "\r",
+                                    "pm.test(\"Test for the email change\", function () {\r",
+                                    "    var data = pm.response.json().data;\r",
+                                    "    pm.expect(data.email).to.equal(\"newdocemail@gmail.com\");\r",
+                                    "\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "PATCH",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "{{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"New name\",\n    \"email\": \"newdocemail@gmail.com\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/dentists/{{dentistId}}/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "dentists",
+                                "{{dentistId}}",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete dentist by ID",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Response status code is 204\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(204);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "{{token}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/api/v1/dentists/{{dentistId}}/",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "api",
+                                "v1",
+                                "dentists",
+                                "{{dentistId}}",
+                                ""
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Delete all dentists",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "pm.test(\"Response status code is 200\", function () {\r",
+                                    "  pm.expect(pm.response.code).to.equal(200);\r",
+                                    "});"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "DELETE",
+                        "header": [],
+                        "url": {
+                            "raw": "http://{{host}}:{{port}}/dentist/delete_all",
+                            "protocol": "http",
+                            "host": [
+                                "{{host}}"
+                            ],
+                            "port": "{{port}}",
+                            "path": [
+                                "dentist",
+                                "delete_all"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "key": "port",
+            "value": "8000",
+            "type": "string"
+        },
+        {
+            "key": "host",
+            "value": "localhost",
+            "type": "string"
+        }
+    ]
+}
