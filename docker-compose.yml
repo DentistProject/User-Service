@@ -13,6 +13,12 @@ services:
       DB_PASSWORD: postgres
       DB_HOST: db
       DB_PORT: 5432
+      DEBUG: True
+      SECRET_KEY: 6b1f53f85e4d136b296fb8542285e954
+    extra_hosts:
+     - "host.docker.internal:host-gateway"
+
+
 
   db:
     image: postgres:latest
@@ -22,6 +28,7 @@ services:
       - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
 
 volumes:
   postgres_data:
