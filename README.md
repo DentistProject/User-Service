@@ -77,13 +77,16 @@ When you do this, you must also set the database host to ```host.internal.docker
 
 ## Endpoints
 ### CRUD operations
+```
 localhost/api/v1/patients
 localhost/api/v1/patients/:id
 localhost/api/v1/dentists
 localhost/api/v1/dentists/:id
 localhost/patient/delete_all
 localhost/dentist/delet_all
-
+```
 ### authentication
+```
 localhost/patient/login
 localhost/dentist/login
+```
