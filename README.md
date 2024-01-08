@@ -51,18 +51,19 @@ Must have docker installed on your computer.
 
 Run docker-compose.yml
 ```
-docker-compose up
+docker-compose up -d
 ```
 Now apply the same database migration process:
 ```
 docker-compose run web python manage.py migrate
 ```
 where ```web``` is the service name specified in docker-compose.yml.
+If connection errors occur in the web container, restarting it should fix the problem.
 
 Note that the data in this container is persistent storage, and will only be lost if you delete the container.
 ___
 </br>
-If you just want to run it as a docker container while still using your existing database, it is a lot simpler.
+If you just want to run it as a docker container while still using your local database, it is a lot simpler.
 
 In root directory, run:
 
@@ -74,4 +75,15 @@ docker run -p computer_port:container_port your_image_name
 
 When you do this, you must also set the database host to ```host.internal.docker``` in ```settings.py``` in order for the container to access the postgres database running on your machine, as the container's localhost is different from your localhost.
 
+## Endpoints
+### CRUD operations
+localhost/api/v1/patients
+localhost/api/v1/patients/:id
+localhost/api/v1/dentists
+localhost/api/v1/dentists/:id
+localhost/patient/delete_all
+localhost/dentist/delet_all
 
+### authentication
+localhost/patient/login
+localhost/dentist/login
