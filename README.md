@@ -83,7 +83,7 @@ localhost/api/v1/patients/:id
 localhost/api/v1/dentists
 localhost/api/v1/dentists/:id
 localhost/patient/delete_all
-localhost/dentist/delet_all
+localhost/dentist/delete_all
 ```
 ### authentication
 ```
